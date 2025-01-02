@@ -1,48 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace src_cs {
-    class WarehousePathFinder {
-        static void Main(string[] args) {
-
+namespace src_cs
+{
+    internal class WarehousePathFinder
+    {
+        private static void Main(string[] args)
+        {
             var tests = new List<TestScenario>();
-            
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test1()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test2()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test3()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test4()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test5()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test6()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test7()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test8()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test9()));
-            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test10()));
 
+            tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.TestXXX()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test1()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test2()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test3()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test4()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test5()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test6()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test7()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test8()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test9()));
+            //tests.Add(new TestScenario(SolverType.PrioritizedPlannerClassesH, InstanceDescription.Test10()));
 
-            TestingUtils.RunTests(tests, 5);
-            /*
-            var wi = InstanceParser.Parse2("../../../../../src_py/test_warehouse.txt");
-            var cbs = new CBS(wi, 80000);
-            cbs.FindTours();
-            */
-            
-            //TestingUtils.RunTests(PrioritizedPlanner, 10);
+            TestingUtils.RunTests(tests, 10);
+
+            //var wi = InstanceParser.Parse2("../../../../../src_py/test_warehouse.txt");
+            //var cbs = new CBS(InstanceGenerator.GenerateInstance(InstanceDescription.TestXXX(), 0)/*, 80000*/);
+            //var tourResults = cbs.FindTours();
 
             Console.ReadKey();
         }
     }
 
-    public class Agent {
+    public class Agent
+    {
         public OrderInstance[] orders;
         public int index;
 
-        public Agent(OrderInstance[] orders, int idx) {
+        public Agent(OrderInstance[] orders, int idx)
+        {
             this.index = idx;
             this.orders = orders;
         }
     }
 
-    public class OrderInstance {
+    public class OrderInstance
+    {
         public int startLoc;
         public int targetLoc;
         public int orderId;
@@ -51,8 +53,8 @@ namespace src_cs {
         public int[] classes;
         public int[] pickTimes;
 
-
-        public OrderInstance(int orderId, List<List<(int, int, int)>> orderItems, int startLoc, int targetLoc, Graph graph) {
+        public OrderInstance(int orderId, List<List<(int, int, int)>> orderItems, int startLoc, int targetLoc, Graph graph)
+        {
             this.orderId = orderId;
             this.startLoc = startLoc;
             this.targetLoc = targetLoc;
@@ -61,8 +63,10 @@ namespace src_cs {
             List<int> classes = new List<int>();
             List<int> pickTimes = new List<int>();
 
-            for (int i = 0; i < orderItems.Count; i++) {
-                for (int j = 0; j < orderItems[i].Count; j++) {
+            for (int i = 0; i < orderItems.Count; i++)
+            {
+                for (int j = 0; j < orderItems[i].Count; j++)
+                {
                     var item = orderItems[i][j];
                     vertices.Add(item.Item1);
                     classes.Add(i + 1);

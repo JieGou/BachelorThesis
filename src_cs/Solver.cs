@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace src_cs {
-    public abstract class Solver {
+namespace src_cs
+{
+    public abstract class Solver
+    {
         public abstract Tour[][] FindTours();
     }
 
-    abstract class ConstraintSolver : Solver {
-        readonly protected WarehouseInstance instance;
-        readonly protected GTSPSolver solver;
+    internal abstract class ConstraintSolver : Solver
+    {
+        protected readonly WarehouseInstance instance;
+        protected readonly GTSPSolver solver;
         protected List<int>[] nodesVisitors0;
         protected List<int>[] nodesVisitors1;
         protected readonly int maxTime;
         protected readonly int agents;
 
-        protected ConstraintSolver(WarehouseInstance instance) {
+        protected ConstraintSolver(WarehouseInstance instance)
+        {
             this.instance = instance;
             this.agents = instance.AgentCount;
             this.nodesVisitors0 = new List<int>[instance.graph.vertices.Count];
             this.nodesVisitors1 = new List<int>[instance.graph.vertices.Count];
-            for (int i = 0; i < nodesVisitors0.Length; i++) {
+            for (int i = 0; i < nodesVisitors0.Length; i++)
+            {
                 nodesVisitors0[i] = new List<int>();
                 nodesVisitors1[i] = new List<int>();
             }
@@ -30,35 +35,44 @@ namespace src_cs {
             maxTime = maxSolverTime * maxOrders;
         }
 
-        public override Tour[][] FindTours() {
+        public override Tour[][] FindTours()
+        {
             throw new NotImplementedException();
         }
 
-        public bool FindConflicts(Tour[][] tours, out Conflict conflict) {
+        public bool FindConflicts(Tour[][] tours, out Conflict conflict)
+        {
             conflict = new Conflict();
             var currVertices = new int[tours.Length];
             var nextVertices = new int[tours.Length];
             var enums = new IEnumerator<int>[tours.Length];
-            for (int i = 0; i < enums.Length; i++) {
+            for (int i = 0; i < enums.Length; i++)
+            {
                 enums[i] = Tour.GetArrayEnum(tours[i]);
-                if (enums[i].MoveNext()) {
+                if (enums[i].MoveNext())
+                {
                     currVertices[i] = enums[i].Current;
                 }
-                if (enums[i].MoveNext()) {
+                if (enums[i].MoveNext())
+                {
                     nextVertices[i] = enums[i].Current;
                 }
             }
 
             // Add agent indicies into visited vertices at 0 timestep
-            for (int j = 0; j < agents; j++) {
+            for (int j = 0; j < agents; j++)
+            {
                 if (currVertices[j] == 0) continue;  // Depot/default value can be occupied by more agents
                 nodesVisitors0[currVertices[j]].Add(j);
             }
 
-            for (int time = 0; time < maxTime - 1; time++) {
+            for (int time = 0; time < maxTime - 1; time++)
+            {
                 // Look for vertex conflicts.
-                for (int i = 0; i < agents; i++) {
-                    if (nodesVisitors0[currVertices[i]].Count > 1) {
+                for (int i = 0; i < agents; i++)
+                {
+                    if (nodesVisitors0[currVertices[i]].Count > 1)
+                    {
                         if (currVertices[i] == 0 || instance.graph.vertices[currVertices[i]] is StagingVertex) continue;
 
                         // Report conflict and clean up the lists.
@@ -72,20 +86,25 @@ namespace src_cs {
                 // Look for edge conflicts.
                 // Fill in t+1 used vertices.
                 if (time == maxTime - 1) continue;
-                for (int j = 0; j < agents; j++) {
+                for (int j = 0; j < agents; j++)
+                {
                     if (nextVertices[j] == 0) continue;
                     nodesVisitors1[nextVertices[j]].Add(j);
                 }
 
                 // Look for conflicts. If edge x->y, then not y->x.
-                for (int j = 0; j < agents; j++) {
+                for (int j = 0; j < agents; j++)
+                {
                     int from = currVertices[j];
                     int to = nextVertices[j];
                     if (from == to) continue;
-                    if (nodesVisitors0[to].Count == 1 && nodesVisitors1[from].Count > 0) {
+                    if (nodesVisitors0[to].Count == 1 && nodesVisitors1[from].Count > 0)
+                    {
                         var visitor0 = nodesVisitors0[to][0];
-                        for (int k = 0; k < nodesVisitors1[from].Count; k++) {
-                            if (visitor0 == nodesVisitors1[from][k]) {
+                        for (int k = 0; k < nodesVisitors1[from].Count; k++)
+                        {
+                            if (visitor0 == nodesVisitors1[from][k])
+                            {
                                 conflict = new Conflict(1, time, j,
                                     visitor0, from, to);
                                 ClearTimeStep();
@@ -100,15 +119,19 @@ namespace src_cs {
             ClearTimeStep();
             return false;
 
-            void ClearTimeStep() {
-                for (int i = 0; i < agents; i++) {
+            void ClearTimeStep()
+            {
+                for (int i = 0; i < agents; i++)
+                {
                     nodesVisitors0[currVertices[i]].Clear();
                     nodesVisitors1[nextVertices[i]].Clear();
                 }
             }
 
-            void NextTimeStep() {
-                for (int i = 0; i < agents; i++) {
+            void NextTimeStep()
+            {
+                for (int i = 0; i < agents; i++)
+                {
                     nodesVisitors0[currVertices[i]].Clear();
                 }
                 {
@@ -121,34 +144,43 @@ namespace src_cs {
                     currVertices = nextVertices;
                     nextVertices = tmp;
                 }
-                for (int i = 0; i < agents; i++) {
-                    if (enums[i].MoveNext()) {
+                for (int i = 0; i < agents; i++)
+                {
+                    if (enums[i].MoveNext())
+                    {
                         nextVertices[i] = enums[i].Current;
                     }
-                    else {
+                    else
+                    {
                         nextVertices[i] = 0;
                     }
                 }
             }
         }
     }
-    public struct Constraint {
+
+    public struct Constraint
+    {
         public int agent;
         public int time;
         public int vertex;
 
-        public Constraint(int time, int vertex, int agent) {
+        public Constraint(int time, int vertex, int agent)
+        {
             this.time = time;
             this.vertex = vertex;
             this.agent = agent;
         }
 
-        public override bool Equals(object obj) {
-            if (obj is Constraint) {
+        public override bool Equals(object obj)
+        {
+            if (obj is Constraint)
+            {
                 var x = (Constraint)obj;
                 if (x.agent == this.agent &&
                     x.time == this.time &&
-                    x.vertex == this.vertex) {
+                    x.vertex == this.vertex)
+                {
                     return true;
                 }
                 return false;
@@ -156,12 +188,14 @@ namespace src_cs {
             return base.Equals(obj);
         }
 
-        public override int GetHashCode() {
+        public override int GetHashCode()
+        {
             return HashCode.Combine(agent, time, vertex);
         }
     }
 
-    public struct Conflict {
+    public struct Conflict
+    {
         public int type;   // 0-vertex conflict, 1-edge conflict
         public int time;
         public int agent1;
@@ -169,7 +203,8 @@ namespace src_cs {
         public int v1;
         public int v2;
 
-        public Conflict(int type, int time, int agent1, int agent2, int v1, int v2) {
+        public Conflict(int type, int time, int agent1, int agent2, int v1, int v2)
+        {
             this.type = type;
             this.time = time;
             this.agent1 = agent1;
@@ -178,13 +213,16 @@ namespace src_cs {
             this.v2 = v2;
         }
 
-        public (Constraint[], Constraint[]) MakeConstraints() {
-            if (type == 0) {
+        public (Constraint[], Constraint[]) MakeConstraints()
+        {
+            if (type == 0)
+            {
                 var c1 = new Constraint(time, v1, agent1);
                 var c2 = new Constraint(time, v1, agent2);
                 return (new Constraint[] { c1 }, new Constraint[] { c2 });
             }
-            else {
+            else
+            {
                 var c1 = new Constraint[2];
                 var c2 = new Constraint[2];
                 c1[0] = new Constraint(time + 1, v1, agent1);
