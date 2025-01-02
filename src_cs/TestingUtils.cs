@@ -28,6 +28,7 @@ namespace src_cs
 
                 for (int i = 0; i < iterations; i++)
                 {
+                    //<image url="$(ProjectDir)\DocumentImages\WarehouseInstance_Sample01.png"/>
                     //Note 重点关注创建仓库实例
                     var instance = InstanceGenerator.GenerateInstance(test.description, 0);
                     // TODO: Generate new items and orders without the need for whole new instance
@@ -35,6 +36,7 @@ namespace src_cs
                     stopwatch.Restart();
 
                     stopwatch.Start();
+                    //<image url="$(ProjectDir)\DocumentImages\WarehouseInstance_Sample01RouteResult.png"/>
                     var tours = solver.FindTours();
                     stopwatch.Stop();
 
