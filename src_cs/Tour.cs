@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 
 public sealed class Tour : IEnumerable<int>
 {
@@ -39,6 +40,11 @@ public sealed class Tour : IEnumerable<int>
     /// 一个二维整数数组，包含了旅行路线中的所有路径
     /// </summary>
     public int[][] routes;
+
+    /// <summary>
+    /// 路线的坐标点路径
+    /// </summary>
+    public List<List<Point>> routePaths= new List<List<Point>>();
 
     /// <summary>
     /// 构造函数
